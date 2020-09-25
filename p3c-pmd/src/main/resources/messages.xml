@@ -162,11 +162,11 @@
     </entry>
     <entry key="java.concurrent.ThreadPoolCreationRule.rule.desc">
         <![CDATA[
-说明：Executors各个方法的弊端：
-1）newFixedThreadPool和newSingleThreadExecutor:
-  主要问题是堆积的请求处理队列可能会耗费非常大的内存，甚至OOM。
-2）newCachedThreadPool和newScheduledThreadPool:
-  主要问题是线程数最大数是Integer.MAX_VALUE，可能会创建数量非常多的线程，甚至OOM。]]>
+说明：Executors返回的线程池对象的弊端如下：
+1）FixedThreadPool和SingleThreadPool:
+  允许的请求队列长度为Integer.MAX_VALUE，可能会堆积大量的请求，从而导致OOM。
+2）CachedThreadPool:
+  允许的创建线程数量为Integer.MAX_VALUE，可能会创建大量的线程，从而导致OOM。]]>
     </entry>
 
     <entry key="java.concurrent.ThreadShouldSetNameRule.violation.msg.ThreadPoolExecutor">
@@ -177,6 +177,15 @@
     </entry>
     <entry key="java.concurrent.ThreadShouldSetNameRule.rule.msg">
         <![CDATA[创建线程或线程池时请指定有意义的线程名称，方便出错时回溯。创建线程池的时候请使用带ThreadFactory的构造函数，并且提供自定义ThreadFactory实现或者使用第三方实现。]]>
+    </entry>
+    <entry key="java.concurrent.LockShouldWithTryFinallyRule.violation.msg">
+        <![CDATA[锁【%s】必须紧跟try代码块，且unlock要放到finally第一行。]]>
+    </entry>
+    <entry key="java.concurrent.LockShouldWithTryFinallyRule.rule.msg">
+        <![CDATA[在使用阻塞等待获取锁的方式中，必须在try代码块之外，并且在加锁方法与try代码块之间没有任何可能抛出异常的方法调用，避免加锁成功后，在finally中无法解锁。
+说明一：如果在lock方法与try代码块之间的方法调用抛出异常，那么无法解锁，造成其它线程无法成功获取锁。
+说明二：如果lock方法在try代码块之内，可能由于其它方法抛出异常，导致在finally代码块中，unlock对未加锁的对象解锁，它会调用AQS的tryRelease方法（取决于具体实现类），抛出IllegalMonitorStateException异常。
+说明三：在Lock对象的lock方法实现中可能抛出unchecked异常，产生的后果与说明二相同。]]>
     </entry>
 
     <!-- flowcontrol -->
@@ -205,6 +214,16 @@
     </entry>
     <entry key="java.flowcontrol.AvoidComplexConditionRule.rule.desc">
         <![CDATA[说明：很多if语句内的逻辑相当复杂，阅读者需要分析条件表达式的最终结果，才能明确什么样的条件执行什么样的语句，那么，如果阅读者分析逻辑表达式错误呢？]]>
+    </entry>
+
+    <entry key="java.flowcontrol.AvoidNegationOperatorRule.violation.msg">
+        <![CDATA["!"运算符不利于快速理解。]]>
+    </entry>
+    <entry key="java.flowcontrol.AvoidNegationOperatorRule.rule.msg">
+        <![CDATA[避免采用取反逻辑运算符。]]>
+    </entry>
+    <entry key="java.flowcontrol.AvoidNegationOperatorRule.rule.desc">
+        <![CDATA[说明: 取反逻辑不利于快速理解，并且取反逻辑写法必然存在对应的正向逻辑写法。]]>
     </entry>
 
     <!-- set -->
@@ -263,7 +282,6 @@
     <entry key="java.constant.UpperEllRule.rule.msg">
         <![CDATA[ long或者Long初始赋值时，必须使用大写的L，不能是小写的l，小写容易跟数字1混淆，造成误解。]]>
     </entry>
-
 
 
     <!-- oop -->
@@ -327,6 +345,16 @@
     </entry>
     <entry key="java.oop.StringConcatRule.rule.msg.desc">
         <![CDATA[说明：反编译出的字节码文件显示每次循环都会new出一个StringBuilder对象，然后进行append操作，最后通过toString方法返回String对象，造成内存资源浪费。]]>
+    </entry>
+
+    <entry key="java.oop.BigDecimalAvoidDoubleConstructorRule.violation.msg">
+        <![CDATA[使用了new BigDecimal(double)构造函数]]>
+    </entry>
+    <entry key="java.oop.BigDecimalAvoidDoubleConstructorRule.rule.msg">
+        <![CDATA[禁止使用构造方法BigDecimal(double)的方式把double值转化为BigDecimal对象]]>
+    </entry>
+    <entry key="java.oop.BigDecimalAvoidDoubleConstructorRule.rule.msg.desc">
+        <![CDATA[说明：BigDecimal(double)存在精度损失风险，在精确计算或值比较的场景中可能会导致业务逻辑异常。]]>
     </entry>
 
     <!-- comment -->
@@ -411,7 +439,7 @@
         <![CDATA[所有的枚举类型字段必须要有注释，说明每个数据项的用途。]]>
     </entry>
     <entry key="java.comment.EnumConstantsMustHaveCommentRule.violation.msg">
-        <![CDATA[枚举字段【%s】缺少注释信息]]>
+        <![CDATA[枚举【%s】的字段缺少注释信息]]>
     </entry>
 
     <entry key="java.comment.RemoveCommentedCodeRule.rule.msg">
@@ -461,6 +489,27 @@
         <![CDATA[注意 Math.random() 这个方法返回是double类型，注意取值的范围[0,1)（能够取到零值，注意除零异常），如果想获取整数类型的随机数，不要将x放大10的若干倍然后取整，直接使用Random对象的nextInt或者nextLong方法。]]>
     </entry>
 
+    <entry key="java.other.MethodTooLongRule.rule.msg">
+        <![CDATA[单个方法的总行数不超过80行。]]>
+    </entry>
+
+    <entry key="java.other.MethodTooLongRule.rule.desc">
+        <![CDATA[
+说明：除注释之外的方法签名、结束右大括号、方法内代码、空行、回车及任何不可见字符的总行数不超过80行。
+        ]]>
+    </entry>
+
+    <entry key="java.other.MethodTooLongRule.violation.msg">
+        <![CDATA[方法【%s】的总行数不要超过80行。]]>
+    </entry>
+
+    <entry key="java.other.UseRightCaseForDateFormatRule.rule.msg">
+        <![CDATA[日期格式化字符串[%s]使用错误，应注意使用小写‘y’表示当天所在的年，大写‘Y’代表week in which year。]]>
+    </entry>
+    <entry key="java.other.UseRightCaseForDateFormatRule.rule.desc">
+        <![CDATA[日期格式化时，yyyy表示当天所在的年，而大写的YYYY代表是week in which year（JDK7之后引入的概念），意思是当天所在的周属于的年份，一周从周日开始，周六结束，只要本周跨年，返回的YYYY就是下一年。]]>
+    </entry>
+
     <!-- other -->
     <entry key="vm.other.UseQuietReferenceNotationRule.rule.msg">
         <![CDATA[后台输送给页面的变量必须加感叹号，${var}——中间加感叹号！。]]>
@@ -474,5 +523,36 @@
         <![CDATA[变量【%s】使用的时候应在$后加感叹号]]>
     </entry>
 
+    <entry key="java.other.AvoidDoubleOrFloatEqualCompareRule.rule.msg">
+        <![CDATA[浮点数之间的等值判断，基本数据类型不能用==来比较，包装数据类型不能用equals来判断]]>
+    </entry>
+    <entry key="java.other.AvoidDoubleOrFloatEqualCompareRule.rule.desc">
+        <![CDATA[
+浮点数采用“尾数+阶码”的编码方式，类似于科学计数法的“有效数字+指数”的表示方式。二进制无法精确表示大部分的十进制小数，具体原理参考《码出高效》
+改进方式:
+1）指定一个误差范围，两个浮点数的差值在此范围之内，则认为是相等的
+    float a = 1.0f - 0.9f;
+    float b = 0.9f - 0.8f;
+    float diff = 1e-6f;
+
+    if (Math.abs(a - b) < diff) {
+        System.out.println("true");
+    }
+2) 使用BigDecimal来定义值，再进行浮点数的运算操作
+    BigDecimal a = new BigDecimal("1.0");
+    BigDecimal b = new BigDecimal("0.9");
+    BigDecimal c = new BigDecimal("0.8");
+
+    BigDecimal x = a.subtract(b);
+    BigDecimal y = b.subtract(c);
+
+    if (x.equals(y)) {
+        System.out.println("true");
+    }
+        ]]>
+    </entry>
+    <entry key="java.other.AvoidDoubleOrFloatEqualCompareRule.rule.msg">
+        <![CDATA[浮点数之间的等值判断，基本数据类型不能用==来比较，包装数据类型不能用equals来判断。]]>
+    </entry>
 
 </properties>

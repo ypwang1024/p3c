@@ -16,17 +16,18 @@
 package com.alibaba.p3c.pmd.lang.java.rule.other;
 
 import net.sourceforge.pmd.testframework.SimpleAggregatorTst;
+import org.junit.Test;
 
 /**
  * Test for other java rules.
- * 
+ *
  * @author keriezhang
  * @date 2017/06/18
  *
  */
 public class OtherRulesTest extends SimpleAggregatorTst {
 
-    private static final String RULESET = "java-ali-other";
+    public static final String RULESET = "java-ali-other";
 
     @Override
     public void setUp() {
@@ -34,5 +35,12 @@ public class OtherRulesTest extends SimpleAggregatorTst {
         addRule(RULESET, "AvoidNewDateGetTimeRule");
         addRule(RULESET, "AvoidPatternCompileInMethodRule");
         addRule(RULESET, "AvoidMissUseOfMathRandomRule");
+        addRule(RULESET, "MethodTooLongRule");
+        addRule(RULESET,"UseRightCaseForDateFormatRule");
+        addRule(RULESET,"AvoidDoubleOrFloatEqualCompareRule");
     }
+
+
+
+
 }

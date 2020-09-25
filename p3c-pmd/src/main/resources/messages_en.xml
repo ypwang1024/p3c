@@ -50,7 +50,7 @@
     </entry>
 
     <entry key="java.exception.MethodReturnWrapperTypeRule.violation.msg">
-        <![CDATA[the return type is primitive【%s】，return a value of wrapper class【%s】，may cause NullPointerException]]>
+        <![CDATA[the return type is primitive[%s], return a value of wrapper class[%s], may cause NullPointerException]]>
     </entry>
 
     <entry key="java.exception.MethodReturnWrapperTypeRule.rule.msg">
@@ -130,7 +130,7 @@ Note: In JDK8, Instant can be used to replace Date, Calendar is replaced by Loca
     </entry>
 
     <entry key="java.concurrent.AvoidManuallyCreateThreadRule.violation.msg">
-        <![CDATA[Explicitly creating threads is not allowed，use thread pool instead.]]>
+        <![CDATA[Explicitly creating threads is not allowed, use thread pool instead.]]>
     </entry>
     <entry key="java.concurrent.AvoidManuallyCreateThreadRule.rule.msg">
         <![CDATA[Threads should be provided by thread pools. Explicitly creating threads is not allowed.]]>
@@ -167,7 +167,7 @@ Note: In JDK8, Instant can be used to replace Date, Calendar is replaced by Loca
 Note: Below are the problems created by usage of Executors for thread pool creation:
 1) FixedThreadPool and SingleThreadPool:
  Maximum request queue size Integer.MAX_VALUE. A large number of requests might cause OOM.
-2) CachedThreadPool and ScheduledThreadPool:
+2) CachedThreadPool:
  The number of threads which are allowed to be created is Integer.MAX_VALUE. Creating too many threads might lead to OOM.]]>
     </entry>
 
@@ -180,7 +180,15 @@ Note: Below are the problems created by usage of Executors for thread pool creat
     <entry key="java.concurrent.ThreadShouldSetNameRule.rule.msg">
         <![CDATA[A meaningful thread name is helpful to trace the error information,so assign a name when creating threads or thread pools.]]>
     </entry>
-
+    <entry key="java.concurrent.LockShouldWithTryFinallyRule.violation.msg">
+        <![CDATA[Lock operation [%s] must immediately follow by try block, and unlock operation must be placed in the first line of finally block.]]>
+    </entry>
+    <entry key="java.concurrent.LockShouldWithTryFinallyRule.rule.msg">
+        <![CDATA[When getting the lock by blocking methods, such as waiting in the blocking queue, lock() must be put outside the try block. Besides, make sure there is no method that throws Exception between the lock() and try block, in case the lock won't be released in the finally block.
+Explain 1: If there was any Exception thrown between the lock() and try block, it won't be able to release the lock, causing that the other threads cannot get the lock.
+Explain 2: If there was lock() in the try block and a method that throw Exception between the try block and lock(), it is possible that unlock() won't work. Then AQS(AbstractQueuedSynchronizer) method will be called(depends on the implementation of the class) and IllegalMonitorStateException will be thrown.
+Explain 3: It is possible that when implementing the lock() method in Lock object, it would throw unchecked Exception, resulting in the same outcome of the Explain 2.]]>
+    </entry>
     <!-- flowcontrol -->
     <entry key="java.flowcontrol.SwitchStatementRule.violation.nodefault">
         <![CDATA[missing default statement in switch block]]>
@@ -209,6 +217,16 @@ Note: Below are the problems created by usage of Executors for thread pool creat
         <![CDATA[Note: Logic within many if statements are very complicated. Readers need to analyze the final results of the conditional expression to decide what statement is to be executed in certain conditions.]]>
     </entry>
 
+    <entry key="java.flowcontrol.AvoidNegationOperatorRule.violation.msg">
+        <![CDATA[The negation operator is not easy to be quickly understood.]]>
+    </entry>
+    <entry key="java.flowcontrol.AvoidNegationOperatorRule.rule.msg">
+        <![CDATA[Avoid using the negation operator '!'.]]>
+    </entry>
+    <entry key="java.flowcontrol.AvoidNegationOperatorRule.rule.desc">
+        <![CDATA[Note: The negation operator is not easy to be quickly understood. There must be a positive way to represent the same logic.]]>
+    </entry>
+
     <!-- set -->
     <entry key="java.set.ClassCastExceptionWithSubListToArrayListRule.violation.msg">
         <![CDATA[The result of [%s] can't cast in class ArrayList]]>
@@ -217,7 +235,7 @@ Note: Below are the problems created by usage of Executors for thread pool creat
         <![CDATA[Do not cast subList in class ArrayList, otherwise ClassCastException will be thrown. ]]>
     </entry>
     <entry key="java.set.ClassCastExceptionWithSubListToArrayListRule.rule.msg.desc">
-        <![CDATA[Note:Do not cast, if you have to do，please use new Conllection(sublist result). ]]>
+        <![CDATA[Note:Do not cast, if you have to do, please use new Conllection(sublist result). ]]>
     </entry>
     <entry key="java.set.ClassCastExceptionWithToArrayRule.violation.msg">
         <![CDATA[[%s] should use arguments with  array size.]]>
@@ -329,6 +347,16 @@ Note: Below are the problems created by usage of Executors for thread pool creat
         <![CDATA[Note: According to the decompiled bytecode file, for each loop, it allocates a StringBuilder object, appends a string, and finally returns a String object via the toString method. This is a tremendous waste of memory.]]>
     </entry>
 
+    <entry key="java.oop.BigDecimalAvoidDoubleConstructorRule.violation.msg">
+        <![CDATA[Constructor BigDecimal(double) is invoked]]>
+    </entry>
+    <entry key="java.oop.BigDecimalAvoidDoubleConstructorRule.rule.msg">
+        <![CDATA[Avoid using the constructor BigDecimal(double) to convert double value to a BigDecimal object.]]>
+    </entry>
+    <entry key="java.oop.BigDecimalAvoidDoubleConstructorRule.rule.msg.desc">
+        <![CDATA[Note：Use the constructor BigDecimal(String) or valueOf method of BigDecimal. Inside valueOf the toString of Double is executed, which truncate the mantissa according to the precision of double.]]>
+    </entry>
+
     <!-- comment -->
     <entry key="java.comment.CommentsMustBeJavadocFormatRule.rule.msg">
         <![CDATA[Javadoc should be used for classes, class variables and methods. The format should be '/** comment **/', rather than '// xxx'.]]>
@@ -411,7 +439,7 @@ The format of date is 'yyyy/MM/dd'.
         <![CDATA[All enumeration type fields should be commented as Javadoc style.]]>
     </entry>
     <entry key="java.comment.EnumConstantsMustHaveCommentRule.violation.msg">
-        <![CDATA[enum [%s] should have javadoc]]>
+        <![CDATA[fields of enum [%s] should have javadoc]]>
     </entry>
 
     <entry key="java.comment.RemoveCommentedCodeRule.rule.msg">
@@ -462,6 +490,29 @@ Note: In order to get a more accurate time, use System.nanoTime(). In JDK8, use 
         <![CDATA[The return type of Math.random() is double, value range is 0<=x<1 (0 is possible). If a random integer is required, do not multiply x by 10 then round the result. The correct way is to use nextInt or nextLong method which belong to Random Object.]]>
     </entry>
 
+    <entry key="java.other.MethodTooLongRule.rule.msg">
+        <![CDATA[The total number of lines for a method should not be more than 80.]]>
+    </entry>
+
+    <entry key="java.other.MethodTooLongRule.rule.desc">
+        <![CDATA[
+Note: The total number of lines, including the method signature, closing brace, codes, blank lines, line breaks and any invisible lines, should not be more than 80 (comments are not included).
+        ]]>
+    </entry>
+
+    <entry key="java.other.MethodTooLongRule.violation.msg">
+        <![CDATA[The total number of lines for method [%s] should not be more than 80.]]>
+    </entry>
+
+    <entry key="java.other.UseRightCaseForDateFormatRule.rule.msg">
+        <![CDATA[Date format string [%s] is error,When doing date formatting, 'y' should be written in lowercase for 'year'.]]>
+    </entry>
+    <entry key="java.other.UseRightCaseForDateFormatRule.rule.desc">
+        <![CDATA[When doing date formatting, "yyyy" represents the day in which year, while "YYYY" represents the week in which
+ * year (a concept introduced in JDK7). If a week is across two years, the returning "YYYY"represents the next year.]]>
+    </entry>
+
+
     <!--other -->
     <entry key="vm.other.UseQuietReferenceNotationRule.rule.msg">
         <![CDATA[Variables must add exclamatory mark when passing to velocity engine from backend, ${var}--add '!' after '$'.]]>
@@ -473,6 +524,40 @@ Note: If attribute is null or does not exist, ${var} will be shown directly on w
     </entry>
     <entry key="vm.other.UseQuietReferenceNotationRule.violation.msg">
         <![CDATA[variable [%s] should add ! after $]]>
+    </entry>
+
+    <entry key="java.other.AvoidDoubleOrFloatEqualCompareRule.rule.msg">
+        <![CDATA[To judge the equivalence of floating-point numbers, == cannot be used for primitive types, while equals cannot be used for wrapper classes.]]>
+    </entry>
+    <entry key="java.other.AvoidDoubleOrFloatEqualCompareRule.rule.desc">
+        <![CDATA[
+Floating-point numbers are composed by mantissa and exponent, which is similar to the coefficient and exponent of scientific notation. Most decimal fractions cannot be represented precisely by binary. For more details please refer to "Easy Coding".
+Positive example:
+1) Specify an error range. Consider two floating-pointing numbers as equal if the difference between them is within this range.
+
+    float a = 1.0f - 0.9f;
+    float b = 0.9f - 0.8f;
+    float diff = 1e-6f;
+
+    if (Math.abs(a - b) < diff) {
+        System.out.println("true");
+    }
+2) Use BigDecimal to operate.
+
+    BigDecimal a = new BigDecimal("1.0");
+    BigDecimal b = new BigDecimal("0.9");
+    BigDecimal c = new BigDecimal("0.8");
+
+    BigDecimal x = a.subtract(b);
+    BigDecimal y = b.subtract(c);
+
+    if (x.equals(y)) {
+        System.out.println("true");
+    }
+        ]]>
+    </entry>
+    <entry key="java.other.AvoidDoubleOrFloatEqualCompareRule.rule.msg">
+        <![CDATA[To judge the equivalence of floating-point numbers, == cannot be used for primitive types, while equals cannot be used for wrapper classes.]]>
     </entry>
 
 </properties>

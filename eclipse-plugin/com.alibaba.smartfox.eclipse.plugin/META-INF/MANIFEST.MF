@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: com.alibaba.smartfox.eclipse.plugin
 Bundle-SymbolicName: com.alibaba.smartfox.eclipse.plugin;singleton:=true
-Bundle-Version: 1.0.4.qualifier
+Bundle-Version: 2.0.1.qualifier
 Bundle-Activator: com.alibaba.smartfox.eclipse.SmartfoxActivator
 Bundle-Vendor: Alibaba
 Require-Bundle: org.eclipse.ui,
@@ -22,7 +22,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.equinox.p2.metadata.repository,
  org.eclipse.equinox.p2.ui,
  org.eclipse.equinox.p2.metadata
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: target/lib/antlr-runtime.jar,
  target/lib/antlr4-runtime.jar,

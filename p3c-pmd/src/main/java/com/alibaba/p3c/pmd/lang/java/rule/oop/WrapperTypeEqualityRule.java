@@ -38,20 +38,36 @@ public class WrapperTypeEqualityRule extends AbstractAliRule {
         final String unaryExpression = "UnaryExpression";
         // null presents in either side of "==" or "!=" means no violation
         if (node.hasDescendantMatchingXPath(literalPrefix)
-                || node.hasDescendantMatchingXPath(unaryExpression)) {
+            || node.hasDescendantMatchingXPath(unaryExpression)) {
             return super.visit(node, data);
         }
 
         // possible elements around "==" are PrimaryExpression or UnaryExpression(e.g. a == -2)
         List<ASTPrimaryExpression> expressions = node.findChildrenOfType(ASTPrimaryExpression.class);
         if (expressions.size() == NumberConstants.INTEGER_SIZE_OR_LENGTH_2) {
-            if (NodeUtils.isWrapperType(expressions.get(0)) &&
-                    NodeUtils.isWrapperType(expressions.get(1))) {
+            // PMD can not resolve array length type, but only the
+            ASTPrimaryExpression left = expressions.get(0);
+            ASTPrimaryExpression right = expressions.get(1);
+            // if left is complex expression, skip
+            if (left.jjtGetNumChildren() > 1) {
+                return super.visit(node, data);
+            }
+            boolean bothArrayLength = isArrayLength(left) && isArrayLength(right);
+            boolean bothWrapperType = NodeUtils.isWrapperType(left) && NodeUtils.isWrapperType(right);
+
+            if (!bothArrayLength && bothWrapperType) {
                 addViolationWithMessage(data, node, "java.oop.WrapperTypeEqualityRule.violation.msg");
             }
         }
 
         return super.visit(node, data);
+    }
+
+    private boolean isArrayLength(ASTPrimaryExpression expression) {
+        // assume expression like "x.length" is the length of array, field with name "length" may result in
+        // misrecognition
+        return "length".equals(expression.jjtGetLastToken().getImage())
+            && ".".equals(expression.jjtGetFirstToken().getNext().getImage());
     }
 
 }

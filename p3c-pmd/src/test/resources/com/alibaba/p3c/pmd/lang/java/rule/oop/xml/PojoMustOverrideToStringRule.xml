@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<test-data>
+<test-data xmlns="http://pmd.sourceforge.net/rule-tests"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://pmd.sourceforge.net/rule-tests https://pmd.sourceforge.io/rule-tests_1_0_0.xsd">
 
 	<code-fragment id="pojo-not-override-tostring">
 		<![CDATA[
@@ -132,4 +134,19 @@
 		<expected-problems>0</expected-problems>
 		<code-ref id="lombok-pojo-4" />
 	</test-code>
+
+    <!-- ====================================================================== -->
+
+    <code-fragment id="interface-with-pojo-surfix">
+        <![CDATA[
+	public interface FooDO {
+	}
+		]]>
+    </code-fragment>
+    <test-code>
+        <description>interface with POJO surfix</description>
+        <expected-problems>0</expected-problems>
+        <code-ref id="interface-with-pojo-surfix" />
+    </test-code>
+
 </test-data>
